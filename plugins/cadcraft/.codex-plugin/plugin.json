@@ -1,0 +1,34 @@
+{
+  "name": "cadcraft",
+  "version": "1.1.0",
+  "description": "Community CADCraft Copilot integration: current-document MCP tools and native AI sidebar.",
+  "author": {
+    "name": "Zhang-hao-bin"
+  },
+  "keywords": [
+    "cad",
+    "cadcraft",
+    "drawing",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "CADCraft AI Copilot",
+    "shortDescription": "读取图纸、绘制几何图形并标注尺寸",
+    "longDescription": "Connect a separately installed CADCraft Copilot build. MCP and software operation skill are packaged here; application binaries and credentials are not included.",
+    "developerName": "ArtCraft AI Copilot community",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "查看当前 CADCraft 图纸",
+      "画一个 100×60 毫米的矩形并标注尺寸"
+    ],
+    "brandColor": "#2563EB",
+    "composerIcon": "./icon.svg",
+    "logo": "./icon.svg"
+  }
+}

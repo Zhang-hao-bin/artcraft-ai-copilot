@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Independent FreeCAD process bridge. Own code; no CAD kernel linked into CADCraft."""
+import json, os, math, sys, subprocess, uuid, datetime
+from pathlib import Path
+BASE=Path(__file__).resolve().parent
+FC=Path(os.environ.get('CADCRAFT_FREECAD_ROOT',str(Path.home()/'.local/share/freecad-solid/squashfs-root'))).expanduser().resolve()
+OUTPUT=Path(os.environ.get('CADCRAFT_SOLID_OUTPUT_DIR',str(Path.home()/'Documents/CADCraft/solids'))).expanduser().resolve()
+GUI=FC/'AppRun'
+
+def gui_open(path):
+    path=Path(path).resolve()
+    allowed=OUTPUT
+    if not path.is_relative_to(allowed) or path.suffix!='.FCStd' or not path.is_file():
+        raise ValueError('请选择三维实体输出目录中的 FCStd 文件')
+    env=os.environ.copy();env.pop('QT_QPA_PLATFORM',None)
+    subprocess.Popen([str(GUI),str(BASE/'view.FCMacro')],env=dict(env,CADCRAFT_SOLID_VIEW=str(path)),stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
+
+def validate(req):
+    if not isinstance(req,dict) or req.get('kind') not in ('bearing','box','cylinder','sphere'):
+        raise ValueError('支持 bearing、box、cylinder、sphere')
+    if req.get('units') not in ('mm','inch'): raise ValueError('units 必须为 mm 或 inch')
+    dims=req.get('dimensions');kind=req['kind']
+    if not isinstance(dims,dict): raise ValueError('dimensions 必须是尺寸对象')
+    keys={'bearing':('outerDiameter','innerDiameter','width'),'box':('length','width','height'),'cylinder':('radius','height'),'sphere':('radius',)}[kind]
+    scale=25.4 if req['units']=='inch' else 1
+    result={}
+    for key in keys:
+        v=dims.get(key)
+        if isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) or not .01<=v*scale<=10000:
+            raise ValueError(f'{key} 必须是 0.01～10000 毫米的有限正数')
+        result[key]=v*scale
+    if kind=='bearing':
+        n=dims.get('balls',10)
+        if isinstance(n,bool) or not isinstance(n,int) or not 3<=n<=64: raise ValueError('balls 必须为 3～64 的整数')
+        result['balls']=n
+        od,ind,w=result['outerDiameter'],result['innerDiameter'],result['width']
+        if ind>=od*.85: raise ValueError('内径应小于外径的 85%')
+        if w<.05*od or w>od: raise ValueError('轴承宽度应在外径的 5%～100% 内')
+        pitch=(od+ind)/4
+        r=min((od-ind)/8,w*.25,pitch*math.sin(math.pi/n)*.8)
+        result['ballRadius']=r;result['pitchRadius']=pitch
+    return {'kind':kind,'units':'mm','dimensions':result,'sourceUnits':req['units']}
+
+try:
+    if len(sys.argv)==3 and sys.argv[1]=='--open':
+        gui_open(sys.argv[2]);print(json.dumps({'ok':True}));sys.exit(0)
+    raw=sys.stdin.buffer.readline(65537)
+    if len(raw)>65536: raise ValueError('建模请求过大')
+    req=validate(json.loads(raw))
+    out=OUTPUT/f"{req['kind']}-{datetime.datetime.now():%Y%m%d-%H%M%S}-{uuid.uuid4().hex[:8]}"
+    out.mkdir(parents=True,exist_ok=False)
+    req['directory']=str(out);(out/'request.json').write_text(json.dumps(req,ensure_ascii=False))
+    env=dict(os.environ,CADCRAFT_SOLID_REQUEST=str(out/'request.json'),QT_QPA_PLATFORM='offscreen')
+    cmd=FC/'usr/bin/freecadcmd'
+    env['LD_LIBRARY_PATH']=str(FC/'usr/lib')
+    env['PYTHONHOME']=str(FC/'usr')
+    env['PYTHONPATH']=str(FC/'usr/lib')
+    with (out/'backend.log').open('wb') as log:
+        result=subprocess.run([str(cmd),str(BASE/'model.py')],env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,timeout=180)
+    report=out/'result.json'
+    if not report.is_file(): raise RuntimeError(f'FreeCAD 生成失败（退出码 {result.returncode}），日志：{out}/backend.log')
+    result=json.loads(report.read_text())
+    if not result.get('ok'): raise RuntimeError(result.get('error','实体生成失败'))
+    print(json.dumps(result,ensure_ascii=False))
+except Exception as e:
+    print(json.dumps({'ok':False,'error':str(e)},ensure_ascii=False));sys.exit(1)

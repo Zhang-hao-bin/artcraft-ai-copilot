@@ -1,0 +1,31 @@
+import traceback
+from pathlib import Path
+try:
+    # Own display macro; opens generated files with the public FreeCAD GUI API.
+    import os,json
+    from pathlib import Path
+    import FreeCAD as App
+    import FreeCADGui as Gui
+    path=Path(os.environ['CADCRAFT_SOLID_VIEW']);doc=App.openDocument(str(path))
+    report=json.loads((path.parent/'result.json').read_text())['result']
+    visible=report['visibleObjects']
+    for obj in doc.Objects:
+        if hasattr(obj,'ViewObject'):
+            obj.ViewObject.Visibility=obj.Name in visible
+            if obj.Name in visible:
+                obj.ViewObject.DisplayMode='Flat Lines'
+                if obj.Label=='保持架':obj.ViewObject.ShapeColor=(0.84,0.65,0.24)
+                elif obj.Name.startswith('Ball'):obj.ViewObject.ShapeColor=(0.82,0.84,0.90)
+                else:obj.ViewObject.ShapeColor=(0.57,0.62,0.69)
+    from PySide import QtCore
+    def render_ready():
+        Gui.activeDocument().activeView().viewAxonometric()
+        Gui.activeDocument().activeView().fitAll()
+        Gui.updateGui()
+        doc.save()
+        def capture():
+            Gui.activeDocument().activeView().saveImage(str(path.parent/'实体预览.png'),1200,1000,'White')
+        QtCore.QTimer.singleShot(800,capture)
+    QtCore.QTimer.singleShot(2500,render_ready)
+except Exception:
+    Path('/tmp/cadcraft-freecad-view-error.log').write_text(traceback.format_exc())

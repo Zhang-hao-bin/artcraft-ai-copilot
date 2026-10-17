@@ -1,0 +1,4 @@
+interface:
+  display_name: "桌面软件 MCP 与 Copilot 集成"
+  short_description: "连接桌面软件 MCP、封装 Codex 插件并实现文档独立的多会话侧栏"
+  default_prompt: "使用 $desktop-mcp-copilot 为指定桌面软件建立 MCP 连接，并按需求封装插件和实现 Copilot 侧栏。"

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-17",
+  "upstream": "storytold/cadcraft",
+  "tag": "v0.7.0",
+  "commit": "fc4e98315a8d771b5ab832f0ade0b5e7b106df7f",
+  "publicOverlay": true,
+  "sourceChanges": [
+    "independent app identity",
+    "portable paths and plugin namespace",
+    "inherit user approval policy"
+  ],
+  "rustToolchain": "1.95.0",
+  "uiTestsPassed": 289,
+  "pythonTestsPassed": 3,
+  "gates": [
+    "cargo fmt --all -- --check",
+    "cargo clippy (modified modules; two inherited style lint exceptions)",
+    "cargo test -p cadcraft-ui-egui",
+    "cargo check wasm32-unknown-unknown",
+    "cargo build -p cadcraft -p cadcraft-cli"
+  ],
+  "newPrefixInstallationVerified": true,
+  "guiVersionVerified": "0.7.0",
+  "mcpCliVersionVerified": "0.7.0",
+  "freecadInvalidInputRejection": true,
+  "patchSHA256": "e06a12af378925047123f62145727586b778ef979ec6d49ac24f6729d0098b54",
+  "notIncluded": [
+    "credentials",
+    "personal chats",
+    "user drawings",
+    "machine configuration",
+    "build trees",
+    "application binaries"
+  ]
+}

@@ -1,0 +1,14 @@
+.work/
+target/
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+*.FCStd
+*.step
+*.dxf
+app.ron
+*.log
+.DS_Store
