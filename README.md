@@ -1,16 +1,37 @@
 # ArtCraft AI Copilot
 
-**为开源桌面应用接入 AI 助手：从 MCP 连接、Codex 插件封装，到软件内 Copilot 侧栏与文档独立多会话。**
+**让使用者在自己的电脑上，用一句提示词驱动 agent，为桌面软件建立 MCP 连接、自行封装，并按需实现 Copilot 助手。**
 
-本项目整理了一次可复现的 Linux 桌面集成实践。参考实现是 **CADCraft v0.7.0 + Codex app-server**：助手读取当前图纸的真实对象与视图，再通过软件自身命令执行绘图和修改。
+本仓库的核心是可交给 Cursor、Claude Code、Codex 等开发 agent 执行的通用 skill：在使用者电脑上发现真实环境和软件接口，生成对应客户端的连接包、操作 skill 或原生插件，并验证当前文档。制作 agent、MCP 客户端与软件内聊天运行时分开适配。
+
+配套提供一次可复现的 Linux 桌面集成实践。参考实现是 **CADCraft v0.7.0 + Codex app-server**：助手读取当前图纸的真实对象与视图，再通过软件自身命令执行绘图和修改。
 
 这是独立的社区集成项目。当前提供 CADCraft 的源码补丁、构建/安装工具、MCP 插件模板、可复用 skill 和可选的 FreeCAD 进程桥接。**ArtCraft 主程序与其他桌面应用尚未在本项目中完成同等适配。** ArtCraft、CADCraft、Codex 和 FreeCAD 的名称归其各自项目所有。
+
+## 先用一句话开始
+
+替换 `【软件名】`，发给运行在你自己电脑上的开发 agent：
+
+```text
+请读取 https://github.com/Zhang-hao-bin/artcraft-ai-copilot 中 skills/desktop-mcp-copilot/SKILL.md 及必要参考，为我这台电脑上的【软件名】建立 MCP 连接，并封装成当前 agent 可用的连接包和操作 skill；自行发现环境，保留已有配置及未保存工作，在新测试文档中回读验证后交付安装与回退说明。
+```
+
+更多可复制需求在 **[PROMPTS.md](PROMPTS.md)**：首次完整执行、已安装技能、仅连接、完整内嵌侧栏、给另一客户端打包、换机复现。不支持原生 skill 的 agent 可以直接读文件；仓库 URL 本身不会自动安装技能。
+
+| 你要做什么 | 从哪里开始 |
+|---|---|
+| 让 agent 连接自己的软件并封装 | [提示词](PROMPTS.md) → [通用 skill](skills/desktop-mcp-copilot/SKILL.md) |
+| 用 Cursor / Claude Code / 其他客户端 | [客户端与运行时适配](skills/desktop-mcp-copilot/references/agent-adapters.md) |
+| 给软件增加聊天侧栏 | [完整侧栏提示词](PROMPTS.md#完整软件内-copilot连接--封装--侧栏)与 [迁移指南](docs/PORTING.md) |
+| 复现已经完成的 CADCraft + Codex 版本 | 下方快速复现与 [安装文档](docs/INSTALL.md) |
+
+agent 需要本机文件与命令能力，目标软件需要已有 MCP/API/SDK/CLI 或可修改源码。没有内嵌 UI 接口时可以先完成外部 MCP 接入；MCP 配置不自动生成软件侧栏。**通用实施流程与配置生成已提供；实际接入仍需按软件、客户端版本和 OS 验收，不能保证任意软件都能自动完成。**
 
 ![CADCraft Copilot 参考界面](docs/copilot.png)
 
 *原验证环境的空白测试图纸；图中没有用户聊天或文档。*
 
-## 已实现
+## CADCraft 参考实现已实现
 
 - MCP 连接已有 CADCraft 桌面窗口；区分原始控制端口与真正的 MCP stdio 服务。
 - 打包 Codex 插件：元数据、MCP 配置和软件操作 skill。
@@ -39,7 +60,7 @@ flowchart LR
 
 侧栏内部动态工具与外部 MCP 使用不同协议，但都落在目标软件的真实能力上。安装 MCP 插件不会自动给任意软件增加内嵌侧栏。
 
-## 快速复现
+## 复现 CADCraft 参考实现
 
 需要 Git、Python 3.11+、Rust 1.95 工具链（包含 rustfmt、clippy 和 wasm32-unknown-unknown），以及 CADCraft 上游要求的 Linux 构建依赖。本项目不附带 CADCraft、Codex 或 FreeCAD 二进制。
 
@@ -74,7 +95,8 @@ python3 scripts/install_local.py
 | `patches/` | 针对已固定上游提交的 CADCraft Copilot 源码补丁 |
 | `scripts/` | 构建、安装、上游版本维护工具 |
 | `plugins/cadcraft/` | 不含个人路径的 Codex 插件模板 |
-| `skills/desktop-mcp-copilot/` | 可交给其他 agent 的完整集成 skill、检查/打包脚本 |
+| `skills/desktop-mcp-copilot/` | agent 通用实施 skill、客户端适配、MCP 检查与连接包生成工具 |
+| `PROMPTS.md` | 可直接发给 agent 的具体提示词 |
 | `backends/freecad/` | 可选的独立进程建模桥接与显示宏 |
 | `tests/` | 本仓库辅助工具的隔离测试 |
 | `docs/` | 安装、设计、迁移、验证和能力边界 |
@@ -89,7 +111,7 @@ python3 scripts/install_local.py
 - 当前文档视图是发送时的采样，不是持续监视整个桌面。
 - 普通 MCP 连接配置不会强制只读；按任务限制调用，并在客户端支持时配置工具 allowlist。
 - 外部只读摘要接口未必返回稳定 UID，不能把标签索引当作稳定身份。内嵌会话池使用软件内部 UID。
-- 其他 agent 的配置格式和工具重载方式需要分别验证。
+- Cursor、Claude Code 项目配置已对照官方文档，并提供 stdio 连接包生成器；本次未实际启动这两个客户端进行端到端加载验收。其他客户端按实际格式适配，工具重载仍需分别验证。
 - CADCraft 画布是二维平面视图；可选的三维实体在独立 FreeCAD 中显示，不能把三维多段线称作实体。
 - 历史记录有数量/大小限制；重启后恢复本地记录不意味着旧服务进程或 thread 仍然运行。
 - 上游发布可能产生源码冲突，自动合并无法保证所有未来版本都无需人工适配。

@@ -8,8 +8,8 @@
 
 后续项目可进一步使用 `(documentUID, conversationId, generation, turnId)` 完整守卫，并为外部 agent 增加不含聊天的文档身份只读工具。普通连接配置不提供强制只读隔离；若需要 server 级只读，必须实现独立的只读工具表或代理并测试。
 
-直接把完整 `skills/desktop-mcp-copilot` 目录交给其他 agent：
+将完整 `skills/desktop-mcp-copilot` 目录交给执行 agent，或让它按仓库根 [PROMPTS.md](../PROMPTS.md) 的提示词自行取得和读取 skill。Cursor、Claude Code、Codex 等使用相同实施流程，但分别生成自己的配置/插件格式，见 [客户端适配](../skills/desktop-mcp-copilot/references/agent-adapters.md)。
 
-> 请使用 $desktop-mcp-copilot，为指定软件建立 MCP 连接与插件封装；如软件有源码或扩展面板能力，再实现 Copilot 侧栏。新文件新会话，新对话新增且保留旧记录。先检查窗口和未保存工作，再在新的测试文件验证修改。
+制作 agent 不必等于接收客户端或侧栏后端。外部 agent 走 MCP；内嵌侧栏需单独映射运行时的会话、流式消息、工具调用和取消协议，不能要求 Cursor/Claude Code 接收 Codex app-server 消息。配置生成、客户端加载及真实文档操作分别验收。
 
 无源码和面板接口时可交付外部连接或独立伴随面板，不能把覆盖窗口称作原生内嵌。ArtCraft 主程序、PhotoCraft、VectorCraft 等需要分别实现和验证；本仓库没有宣称已完成这些适配。

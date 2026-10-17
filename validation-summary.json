@@ -31,5 +31,29 @@
     "machine configuration",
     "build trees",
     "application binaries"
-  ]
+  ],
+  "agentSkillRevision": {
+    "date": "2026-10-17",
+    "pythonTestsPassed": 8,
+    "newPackagingTestsPassed": 5,
+    "bundleProfiles": [
+      "cursor",
+      "claude-code",
+      "generic"
+    ],
+    "configurationSourcesChecked": [
+      "https://cursor.com/docs/mcp",
+      "https://cursor.com/docs/skills",
+      "https://code.claude.com/docs/en/mcp",
+      "https://code.claude.com/docs/en/skills"
+    ],
+    "clientEndToEndVerified": {
+      "cursor": false,
+      "claude-code": false
+    },
+    "runtimeAdaptersImplemented": [
+      "codex-app-server (existing CADCraft reference)"
+    ],
+    "rustPatchChanged": false
+  }
 }

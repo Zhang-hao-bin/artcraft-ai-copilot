@@ -1,15 +1,15 @@
-# 给其他 agent 的交接
+# 让使用者在自己电脑上调用
 
-保留并提供整个 `desktop-mcp-copilot/` 目录，包含 SKILL.md、references、scripts 和 agents。仅发入口会丢失依赖参考。Codex 可安装到 `${CODEX_HOME:-$HOME/.codex}/skills/desktop-mcp-copilot`；已有版本先比较，不盲目覆盖。其他 agent 可直接读取 SKILL.md 并按路由查阅；MCP 按该客户端实际格式注册。
+交付整个 `desktop-mcp-copilot/` 目录，保留 references/scripts/agents。仅发 SKILL.md 会丢失依赖。先核对目标 agent 当前技能机制，支持项目技能时复制到其对应目录（见 [agent 适配](agent-adapters.md)）；已有技能先比较，不覆盖用户修改。只有明确要全局使用才安装全局技能。
 
-## 连接已有 CADCraft
+无需先安装也能启动：让本机 agent 克隆/读取仓库并显式读取 `skills/desktop-mcp-copilot/SKILL.md`，再按路由读取相对参考。仓库根 `PROMPTS.md` 提供完整提示词，包括首次启动、已安装技能、仅连接、完整侧栏与换机复现。
 
-> 请使用 $desktop-mcp-copilot，连接这台电脑上已经运行的 CADCraft Copilot 窗口。读取 skill 入口和 references/cadcraft-local.md，发现实际安装前缀、端口与当前文档，再经 MCP stdio 包装连接。保留 --connect，不重复加载同一 server，不关闭已有窗口。先只读验证，写操作仅按我另行说明的任务执行。普通连接 JSON 不强制只读，有对应能力时设置已核对的工具 allowlist。
+一句话（替换软件名）：
 
-不支持技能语法时换成“请读取我提供目录里的 SKILL.md”。机器/容器中的 127.0.0.1 只指它自身；跨主机连接需要已授权、经过认证的桥接，不能把无认证原始控制端口开放到公网。
+> 请读取 https://github.com/Zhang-hao-bin/artcraft-ai-copilot 中 skills/desktop-mcp-copilot/SKILL.md 及必要参考，为我这台电脑上的【软件名】建立 MCP 连接并封装成当前 agent 可用的交付包；自行发现环境，在新测试文档回读验证，保留已有配置和未保存工作。
 
-## 迁移到其他软件
+如果 agent 不能直接读 GitHub，让它用自己可用的 Git/下载能力取得完整仓库。不能联网时使用已下载的完整目录；路径由用户或本机搜索确认。不要声称仓库 URL 会自动注册技能。
 
-> 请使用 $desktop-mcp-copilot，为我指定的软件建立集成。先发现它实际的 MCP/API/SDK 和 UI 扩展能力，按我要求完成只连接、插件封装或完整 Copilot 侧栏。完整侧栏应支持中文输入、文档与视图读取、模型/思考强度、启动/重开、各文件独立和同文件多会话，新对话保留旧记录。保留未保存工作，在新测试文件验证修改；不能内嵌时说明限制，不伪造连接或能力。
+制作 agent、接收客户端、侧栏后端分别记录；例如“Claude Code 制作 → Cursor 调用软件”完全可行，但生成配置不代表已在 Cursor 加载。缺少目标软件名称时必须问清；缺少本机执行权限时只能交付用户可执行材料，不能虚构安装。
 
-附软件名称、版本、OS、源码/SDK 地址和一个可验证动作。不要发送密码、账号导出或 API key；技能和插件不会授予账号访问权。
+记录检查到的版本、依赖、接口/实际端口、可执行路径、客户端配置增量、还原步骤和验收结果。分发材料排除账号、个人文档和聊天；实际机器路径留在本机适配记录，对外提供可重新发现的说明。容器/SSH/云端的 localhost 不指用户电脑，跨主机须使用已授权且经认证的连接，不开放无认证控制端口。
