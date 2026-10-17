@@ -1,0 +1,85 @@
+{
+  "software": "PhotoCraft",
+  "version": "0.9.0",
+  "upstream": "storytold/photocraft",
+  "commit": "c699e3cda69f4852b43c0b191ab0091aaeff9d6a",
+  "sourceEnvironment": {
+    "os": "Linux",
+    "rust": "1.95.0",
+    "codexCLI": "0.159.2"
+  },
+  "evidenceScope": "Historical source implementation plus separate public-material checks; not proof of installation on another machine.",
+  "sourceImplementation": {
+    "date": "2026-10-17",
+    "patchSHA256": "388e045115752ba5fb6e0ee9ccacc19a0a9548e84b42b799bd8e0dfaddba88e8",
+    "pluginVersion": "1.0.2",
+    "externalMCPTools": 25,
+    "nativeDynamicTools": 7,
+    "verified": [
+      "authenticated visible-window MCP",
+      "client plugin loaded once",
+      "test-document layer creation, undo, redo and save readback",
+      "real model tool call using gpt-6.1-sol",
+      "native sidebar, auto-connect and streaming",
+      "model and effort selection/default restoration",
+      "Chinese IME and Ctrl+Enter",
+      "Simplified Chinese UI preference persisted",
+      "collapse and reopen",
+      "stable document UID and per-file conversations",
+      "new conversation retains old messages and drafts",
+      "stop/switch rejects stale work",
+      "reopen/restart restores saved-file records",
+      "unauthenticated and out-of-root requests rejected"
+    ],
+    "accountModelCatalogCount": 7,
+    "allCatalogModelsInferenceTested": false,
+    "libraryBeforeFinalKeyboardFix": {
+      "passed": 2697,
+      "failed": 0,
+      "ignored": 12
+    },
+    "integrationSuites": 26,
+    "integrationTests": 109,
+    "finalCopilotRegressionTests": {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    "otherChecks": [
+      "native build",
+      "Clippy with no-deps and inherited collapsible_match allowance",
+      "29-crate layering",
+      "WASM",
+      "menu registration wiring only",
+      "14 themes at two window sizes"
+    ],
+    "integrationTestGPU": "lavapipe software Vulkan scoped to tests after hardware offscreen test crashes",
+    "limitations": [
+      "image-generation completion/render/import chain not implemented",
+      "Photoshop open/editability test not performed",
+      "Windows/macOS/web sidebar not verified",
+      "Cursor/Claude Code PhotoCraft end-to-end not verified"
+    ]
+  },
+  "publicMaterials": {
+    "date": "2026-10-17",
+    "patchAppliesToPinnedCleanSource": true,
+    "patchIncludesBothNewRustModules": true,
+    "upstreamLicensesMatch": true,
+    "operationSkillPackagingSmoke": [
+      "cursor",
+      "claude-code",
+      "generic",
+      "codex-plugin"
+    ],
+    "packagingExecutesServer": false,
+    "packagingChangesSourceConfig": false,
+    "existingPythonTestsPassed": 8,
+    "skillValidation": true,
+    "localReferenceLinksChecked": true,
+    "existingTextPreserved": true,
+    "nativeBuildRerun": false,
+    "liveModelRerun": false,
+    "note": "This update adds skill references and the already-tested source patch. It does not change the Rust implementation or install anything."
+  }
+}
