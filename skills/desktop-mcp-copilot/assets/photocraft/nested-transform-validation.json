@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-17",
+  "bugId": "PC-TRANSFORM-001",
+  "bugIdScope": "Repository documentation identifier; not an upstream GitHub issue.",
+  "software": "PhotoCraft",
+  "version": "0.9.0",
+  "upstreamCommit": "c699e3cda69f4852b43c0b191ab0091aaeff9d6a",
+  "sourceEnvironment": {
+    "os": "Linux",
+    "rust": "1.95.0"
+  },
+  "patch": "photocraft-v0.9.0-nested-transform.patch",
+  "patchSHA256": "d692763b9bd31a33caab238d0e384b9d2ae0675f04eab2740745d2904d8c8ae6",
+  "applyAfter": "photocraft-v0.9.0-copilot.patch",
+  "changes": [
+    "Replace top-level preview visibility loop with existing recursive show_only",
+    "Retain target descendants and their visibility; exclude unrelated siblings at each ancestor",
+    "Add two regression tests"
+  ],
+  "sourceVerification": {
+    "regressionBefore": {
+      "passed": 0,
+      "failed": 2,
+      "expected_failure": true,
+      "observed_opaque_alpha": 255,
+      "expected_transparent_alpha": 0
+    },
+    "regressionAfter": {
+      "passed": 2,
+      "failed": 0,
+      "coverage": [
+        "shape and group targets",
+        "8/16/32-bit documents",
+        "bare and styled preview inputs",
+        "hidden children remain hidden",
+        "preview leaves document unchanged",
+        "translated commit preserves transparency"
+      ]
+    },
+    "uiTests": {
+      "suites": 27,
+      "passed": 2809,
+      "failed": 0,
+      "ignored": 12
+    },
+    "checks": {
+      "desktop_build": true,
+      "clippy": true,
+      "existing_clippy_allow": "clippy::collapsible_match",
+      "dependency_layers": true,
+      "wasm": true,
+      "format": true,
+      "diff_check": true
+    },
+    "visualCheck": {
+      "offscreen": true,
+      "interface": "zh-hans",
+      "renderer": "software Vulkan / CPU canvas",
+      "transparentRegionsShowDestination": true,
+      "userArtworkOrScreenshotsPublished": false
+    },
+    "installation": {
+      "atomicallyReplacedExecutable": true,
+      "previousExecutableBackedUp": true,
+      "runningWindowRestarted": false,
+      "userDocumentSavedByFix": false,
+      "pendingWorkPreserved": true,
+      "takesEffectOnNextLaunch": true
+    }
+  },
+  "publicMaterials": {
+    "bothPatchesApplyInOrder": true,
+    "matchesBuiltAndTestedSource": true,
+    "originalIntegrationPatchUnchanged": true,
+    "existingTextPreserved": true,
+    "containsMachineConfigOrPrivateContent": false,
+    "validationStatus": "passed",
+    "sourceFilesCompared": 1753,
+    "upstreamLicensesMatch": true,
+    "packagingSmokeProfiles": [
+      "cursor",
+      "claude-code",
+      "generic",
+      "codex-plugin"
+    ],
+    "packagingDoesNotExecuteOrInstall": true,
+    "skillValidatorsPassed": 2,
+    "existingPythonTestsPassed": 8,
+    "localReferenceLinksChecked": 32,
+    "nativeBuildRepeatedForPublication": false
+  },
+  "scope": {
+    "doesNotInstallOnRecipientMachine": true,
+    "liveModelCallRerun": false,
+    "imageGenerationChainImplemented": false,
+    "photoshopOpenTestPerformed": false,
+    "otherPlatformsSidebarVerified": false
+  }
+}

@@ -1,0 +1,102 @@
+diff --git a/crates/ui-egui/src/transform_tool.rs b/crates/ui-egui/src/transform_tool.rs
+index 81fc0fa..cefa0eb 100644
+--- a/crates/ui-egui/src/transform_tool.rs
++++ b/crates/ui-egui/src/transform_tool.rs
+@@ -773,11 +773,9 @@ fn preview_image(
+         (None, Some(s)) if layer.is_some_and(|l| matches!(l.content, LayerContent::Raster(_))) => Some(s),
+         _ => {
+             let mut solo = doc.clone();
+-            for l in solo.layers.iter_mut() {
+-                if l.id != id && doc.layer(id).is_some_and(|_| !contains(l, id)) {
+-                    l.visible = false;
+-                }
+-            }
++            // Ancestors stay visible, but their other children must not leak into the
++            // moving texels (for example a sky behind a nested transparent grass group).
++            show_only(&mut solo.layers, &[id]);
+             if let Some(l) = solo.layer_mut(id).filter(|_| bare) {
+                 l.effects.enabled = false;
+                 l.opacity = 1.0;
+@@ -4741,6 +4739,82 @@ mod tests {
+         img.pixels[y * img.size[0] + x].a()
+     }
+ 
++    /// Transparent shapes nested beside an opaque background must preview on transparency.
++    /// In particular, keeping an ancestor group must not keep all of that group's children.
++    fn nested_preview_app(group_target: bool, depth: u32) -> PhotocraftApp {
++        use photocraft_color::PixelFormat;
++        use photocraft_doc::Layer;
++        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
++        app.session.execute("file.new", json!({"width": 64, "height": 64, "depth": depth})).unwrap();
++        app.sync_views();
++        app.session.execute("shape.create", json!({"kind": "ellipse", "rect": [8, 8, 8, 8], "fill": "#ff0000"})).unwrap();
++        app.session.execute("shape.create", json!({"kind": "ellipse", "rect": [24, 24, 8, 8], "fill": "#ff0000"})).unwrap();
++        app.session
++            .edit("nest", |doc, active| {
++                let mut children = doc.layers.split_off(1);
++                let leaf = children[0].id;
++                let mut hidden = Layer::raster("hidden child", PixelFormat::RGBA8);
++                hidden.surface_mut().unwrap().fill_rect(photocraft_geom::Rect::new(0, 0, 64, 64), &[0.0, 1.0, 0.0, 1.0]);
++                hidden.visible = false;
++                children.push(hidden);
++                let target = Layer::group("grass", children);
++                *active = Some(if group_target { target.id } else { leaf });
++                let sibling = || {
++                    let mut l = Layer::raster("unrelated blue", PixelFormat::RGBA8);
++                    l.surface_mut().unwrap().fill_rect(photocraft_geom::Rect::new(0, 0, 64, 64), &[0.0, 0.0, 1.0, 1.0]);
++                    l
++                };
++                let inner = Layer::group("inner", vec![sibling(), target]);
++                doc.layers.push(Layer::group("outer", vec![sibling(), inner]));
++                Ok(())
++            })
++            .unwrap();
++        app
++    }
++
++    #[test]
++    fn nested_transform_preview_excludes_siblings_at_every_ancestor() {
++        for depth in [8, 16, 32] {
++            for group in [false, true] {
++                let app = nested_preview_app(group, depth);
++                let st = app.session.active().unwrap();
++                let before = st.doc.layers.clone();
++                for bare in [false, true] {
++                    let (img, _) = preview_image(&st.doc, st.active_layer.unwrap(), None, photocraft_geom::Rect::new(0, 0, 64, 64), 4096, bare);
++                    assert_eq!(texel_alpha(&img, 0, 0), 0, "no ancestor background: group={group}, depth={depth}, bare={bare}");
++                    assert_eq!(texel_alpha(&img, 8, 8), 0, "the ellipse's corner is transparent");
++                    assert_eq!(texel_alpha(&img, 12, 12), 255, "the target is still rendered");
++                    assert_eq!(texel_alpha(&img, 28, 28), if group { 255 } else { 0 }, "keep the target's children, exclude its siblings");
++                    assert_eq!(texel_alpha(&img, 20, 20), 0, "hidden children stay hidden");
++                }
++                assert_eq!(st.doc.layers, before, "preview never edits the document");
++            }
++        }
++    }
++
++    #[test]
++    fn nested_transform_keeps_transparency_after_commit() {
++        for group in [false, true] {
++            let mut app = nested_preview_app(group, 8);
++            begin(&mut app, &egui::Context::default()).unwrap();
++            let (texels, _) = app.transform_preview.as_ref().unwrap().texture.level_image(0).unwrap();
++            assert_eq!(texel_alpha(&texels, 0, 0), 0, "the moving box has no background");
++            let t = app.ui.transform.as_mut().unwrap();
++            t.quad = t.quad.map(|[x, y]| [x + 20.0, y]);
++            commit(&mut app);
++            assert!(app.ui.transform.is_none() && !app.ui.status_error, "{}", app.ui.status);
++            let st = app.session.active().unwrap();
++            let mut solo = (*st.doc).clone();
++            // Render the actual committed target as a root layer, independently of preview isolation.
++            solo.layers = vec![st.doc.layer(st.active_layer.unwrap()).unwrap().clone()];
++            let committed = photocraft_compose::render(&solo, photocraft_geom::Rect::new(0, 0, 64, 64));
++            assert_eq!(committed.get(28, 8)[3], 0.0, "the moved corner remains transparent");
++            assert!(committed.get(32, 12)[0] > 0.99 && committed.get(32, 12)[3] > 0.99, "the shape moved");
++            assert_eq!(committed.get(12, 12)[3], 0.0, "no copy at the old position");
++            assert_eq!(committed.get(48, 28)[3], if group { 1.0 } else { 0.0 }, "a group moves all visible children");
++        }
++    }
++
+     #[test]
+     fn preview_applies_the_linked_mask() {
+         for linked in [true, false] {

@@ -163,3 +163,9 @@ cargo xtask wasm
 测试阶段若需要 lavapipe，先确认 ICD 实际路径，再只给测试命令设置 `VK_DRIVER_FILES` / `VK_ICD_FILENAMES` 与 `WGPU_BACKEND=vulkan`。在多个窗口尺寸及实际支持的主题下检查侧栏；源实现检查过 14 种主题、两种尺寸共 28 组。菜单注册数只证明命令接线，不证明全部 Photoshop 功能等价。
 
 最终分别交付：外部 MCP 已验证层级、接收客户端加载状态、内嵌侧栏与多会话验收、可复现源码基线、依赖/启动与回退，以及未完成能力。只收集必要计数和布尔结果；不发布 `ui.copilot.status` 全量、control token、账户文件、偏好、原始聊天或用户作品。自动化根目录、代理和独立配置只在目标实例内设置。
+
+## 后续修复特别说明：嵌套组变换预览
+
+2026-10-17 在上述集成版本上补充修复了自由变换预览夹带父组背景的问题。复用上文侧栏源码时，在原补丁应用后、编译前增加 [嵌套组预览修复补丁](../assets/photocraft/photocraft-v0.9.0-nested-transform.patch)；原侧栏补丁保持不变。[Bug 修复说明](photocraft-bug-fixes.md) 给出症状、根因、修改位置、应用顺序和生效方式，[独立验证记录](../assets/photocraft/nested-transform-validation.json) 记录本轮证据。
+
+本轮完整 UI 库与集成测试共 2,809 项通过、12 项忽略；其中包含 2 项新增回归测试。上文保留的是集成阶段的历史计数，不与本轮数量相加。此次未重新调用真实模型，也未改变已记录的生图和 Photoshop 实测边界。
