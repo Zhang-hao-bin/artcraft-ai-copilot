@@ -1,6 +1,6 @@
 # 复制给你的 agent
 
-将下面的提示词发给**运行在你自己电脑上、能读取文件并执行命令**的 Cursor、Claude Code、Codex 或其他开发 agent。先替换 `【软件名】`；如果安装了多个版本，可补版本或安装路径。无需先配置 MCP，也不必先安装本 skill：首次提示词会让 agent 取得仓库并读取入口。
+将下面的提示词发给**运行在你自己电脑上、能读取文件并执行命令**的 Cursor、Claude Code、Codex、WorkBuddy 或其他开发 agent。先替换 `【软件名】`；如果安装了多个版本，可补版本或安装路径。无需先配置 MCP，也不必先安装本 skill：首次提示词会让 agent 取得仓库并读取入口。
 
 这是一份让 agent 按本机条件实施的流程。软件需要可用的 MCP、API、SDK、CLI 或可修改源码；没有接口时 agent 应说明缺口并选择可实现方式。有 MCP 不等于能嵌入聊天侧栏；不支持原生 skill 的 agent 也可以显式读文件执行。网页聊天或云端 agent 如果无法访问你的电脑，需要改用本机 agent，或在你授权的远程环境中工作。
 
@@ -33,6 +33,7 @@
 | Cursor | 将完整目录放入项目 `.cursor/skills/desktop-mcp-copilot/`，再用下方自然语言；是否自动发现按你的版本确认 |
 | Claude Code | 完整目录放入项目 `.claude/skills/desktop-mcp-copilot/`；可用 `/desktop-mcp-copilot` 加需求，或下方自然语言 |
 | Codex | 使用当前安装支持的技能入口，例如 `$desktop-mcp-copilot` 加需求 |
+| WorkBuddy | 在技能页面上传完整本地技能包并确认启用，或直接读取入口；见 [WorkBuddy 流程](docs/WORKBUDDY.md)，不假设 `$skill` / `/skill` 语法 |
 | 其他 agent | 按当前客户端的技能机制安装；没有则显式提供本地 `SKILL.md` 路径，不要求它理解 `$skill` 或 `/skill` |
 
 ```text
@@ -60,8 +61,16 @@
 ## 让一个 agent 给另一个客户端打包
 
 ```text
-请按 https://github.com/Zhang-hao-bin/artcraft-ai-copilot 的 desktop-mcp-copilot skill，为本机【软件名】建立 MCP；本次由你完成实现，但接收客户端是【Cursor / Claude Code / Codex / 其他名称，选择一个】。核对该客户端的版本、项目/用户配置范围及重载方式，生成它支持的配置和操作 skill/插件，不沿用你的客户端格式。用接收客户端实际加载并验证目标文档；如果当前无法操作该客户端，交付可执行材料并明确“等待客户端验收”，不要把配置生成称作连接成功。
+请按 https://github.com/Zhang-hao-bin/artcraft-ai-copilot 的 desktop-mcp-copilot skill，为本机【软件名】建立 MCP；本次由你完成实现，但接收客户端是【Cursor / Claude Code / Codex / WorkBuddy / 其他名称，选择一个】。核对该客户端的版本、项目/用户配置范围及重载方式，生成它支持的配置和操作 skill/插件，不沿用你的客户端格式。用接收客户端实际加载并验证目标文档；如果当前无法操作该客户端，交付可执行材料并明确“等待客户端验收”，不要把配置生成称作连接成功。
 ```
+
+## WorkBuddy：在自己的电脑上连接软件
+
+```text
+请读取 https://github.com/Zhang-hao-bin/artcraft-ai-copilot 的 skills/desktop-mcp-copilot/SKILL.md，并读取该 skill 下 references/workbuddy.md，为本机【软件名】建立 MCP 连接并自行封装 WorkBuddy 接入材料。先发现软件、版本、窗口、依赖及 WorkBuddy 运行位置；按当前自定义连接器和技能上传方式注册，保留已有配置和未保存工作，在新测试文档回读验证。只生成配置或无法操作 WorkBuddy UI 时，明确待客户端验收，不声称已连接；本次不默认增加软件内侧栏。
+```
+
+安装、打包、验证及回退见 [WorkBuddy 指南](docs/WORKBUDDY.md)。WorkBuddy 也可以为其他客户端制作连接包，接收客户端需另外指定；制作 agent 与侧栏运行时仍分开适配。
 
 ## 在另一台电脑复现
 

@@ -10,7 +10,7 @@
 
 ## MCP 运输与客户端配置
 
-先按 [agent 适配](agent-adapters.md) 确定接收客户端。下面 Codex 命令仅是一个分支；Cursor/Claude Code 可生成对应项目配置和操作 skill，不必依赖 Codex 安装。未知 agent 根据官方工具/技能机制生成适配，不能导入 Codex 插件冒充原生支持。
+先按 [agent 适配](agent-adapters.md) 确定接收客户端。下面 Codex 命令仅是一个分支；Cursor/Claude Code 可生成对应项目配置和操作 skill，WorkBuddy 生成自定义连接器材料和可上传操作 skill，不必依赖 Codex 安装。未知 agent 根据官方工具/技能机制生成适配，不能导入 Codex 插件冒充原生支持。
 
 
 stdio server 的 stdout 只能包含协议消息，诊断写 stderr。不要在协议 stdout 混入欢迎信息、进度或编译日志。MCP 接口不应直接执行任意来自文档的 shell 字符串。

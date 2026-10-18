@@ -55,5 +55,22 @@
       "codex-app-server (existing CADCraft reference)"
     ],
     "rustPatchChanged": false
+  },
+  "workbuddyRevision": {
+    "date": "2026-10-18",
+    "pythonTestsPassed": 9,
+    "newWorkBuddyTestsPassed": 1,
+    "bundleProfile": "workbuddy",
+    "outputType": "local MCP connector configuration and standalone operation skill upload materials",
+    "configurationSourcesChecked": [
+      "https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Connector",
+      "https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market",
+      "https://open.workbuddy.cn/docs/connector",
+      "https://open.workbuddy.cn/en/docs/skill"
+    ],
+    "clientEndToEndVerified": false,
+    "marketplacePackageGenerated": false,
+    "embeddedRuntimeImplemented": false,
+    "rustPatchChanged": false
   }
 }

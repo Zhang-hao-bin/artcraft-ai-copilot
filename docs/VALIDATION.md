@@ -20,6 +20,14 @@ CADCraft v0.7.0 + Copilot 候选在 Linux/Rust 1.95 环境通过：格式、修�
 
 **本次没有在 Cursor 或 Claude Code 实际加载服务器、调用模型或验证侧栏后端。** 自动化测试验证的是生成器行为；客户端配置格式的文档核对与实际客户端端到端验收分开记录。未知 agent 的中性包仍需按其规范转译。
 
+## WorkBuddy 流程与生成器（2026-10-18）
+
+对照 WorkBuddy 官方技能上传、自定义连接器及开放平台 MCP 规范补充独立接入说明和提示词，新增 `--client workbuddy`。输出为本地接入材料：单 server 的 `mcp.json`、单文件软件操作 skill、可上传的 `operation-skill.zip` 与说明。它不写用户配置、不执行 MCP server，也不生成冒充已发布连接器的元数据。
+
+9 项 Python 辅助测试通过（此前 8 项 + 1 项 WorkBuddy CLI/ZIP 行为测试）。原有参数保持测试同时覆盖新增第四种布局；新增测试实际调用生成器，读取 ZIP 校验文件名/内容、验证命令未被执行且未创建猜测的客户端配置目录。另执行 skill 校验、Python/JSON 语法和本地资源链接检查。未修改 Rust 补丁，未重跑参考实现的 289 项 UI 测试。
+
+WorkBuddy 客户端加载、握手及真实文档操作均未在本次验证；本仓库也未实现 WorkBuddy 内嵌聊天运行时或申请市场发布。流程依据链接在 [WorkBuddy 参考](../skills/desktop-mcp-copilot/references/workbuddy.md)，格式核对不等于端到端兼容证明。
+
 ## 尚未证明
 
 未在每款 ArtCraft 相关软件或每种操作系统中实现同等侧栏；未验证所有 agent 的配置格式；普通 MCP JSON 不强制只读；外部只读摘要不一定暴露稳定文档 UID。图片采样不是实时屏幕监视。不能把语义评估、模板生成或工具枚举描述成完整的写操作验收。

@@ -2,7 +2,7 @@
 
 **让使用者在自己的电脑上，用一句提示词驱动 agent，为桌面软件建立 MCP 连接、自行封装，并按需实现 Copilot 助手。**
 
-本仓库的核心是可交给 Cursor、Claude Code、Codex 等开发 agent 执行的通用 skill：在使用者电脑上发现真实环境和软件接口，生成对应客户端的连接包、操作 skill 或原生插件，并验证当前文档。制作 agent、MCP 客户端与软件内聊天运行时分开适配。
+本仓库的核心是可交给 Cursor、Claude Code、Codex、WorkBuddy 等开发 agent 执行的通用 skill：在使用者电脑上发现真实环境和软件接口，生成对应客户端的连接包、操作 skill 或原生插件，并验证当前文档。制作 agent、MCP 客户端与软件内聊天运行时分开适配。
 
 配套提供一次可复现的 Linux 桌面集成实践。参考实现是 **CADCraft v0.7.0 + Codex app-server**：助手读取当前图纸的真实对象与视图，再通过软件自身命令执行绘图和修改。
 
@@ -22,6 +22,7 @@
 |---|---|
 | 让 agent 连接自己的软件并封装 | [提示词](PROMPTS.md) → [通用 skill](skills/desktop-mcp-copilot/SKILL.md) |
 | 用 Cursor / Claude Code / 其他客户端 | [客户端与运行时适配](skills/desktop-mcp-copilot/references/agent-adapters.md) |
+| 用 WorkBuddy 连接自己的软件 | [WorkBuddy 指南与提示词](docs/WORKBUDDY.md) |
 | 给软件增加聊天侧栏 | [完整侧栏提示词](PROMPTS.md#完整软件内-copilot连接--封装--侧栏)与 [迁移指南](docs/PORTING.md) |
 | 复现已经完成的 CADCraft + Codex 版本 | 下方快速复现与 [安装文档](docs/INSTALL.md) |
 
@@ -111,7 +112,7 @@ python3 scripts/install_local.py
 - 当前文档视图是发送时的采样，不是持续监视整个桌面。
 - 普通 MCP 连接配置不会强制只读；按任务限制调用，并在客户端支持时配置工具 allowlist。
 - 外部只读摘要接口未必返回稳定 UID，不能把标签索引当作稳定身份。内嵌会话池使用软件内部 UID。
-- Cursor、Claude Code 项目配置已对照官方文档，并提供 stdio 连接包生成器；本次未实际启动这两个客户端进行端到端加载验收。其他客户端按实际格式适配，工具重载仍需分别验证。
+- Cursor、Claude Code 项目配置及 WorkBuddy 自定义连接器流程已对照官方文档，并提供 stdio 材料包生成器；尚未在这三个客户端完成端到端加载验收。其他客户端按实际格式适配，工具重载仍需分别验证。
 - CADCraft 画布是二维平面视图；可选的三维实体在独立 FreeCAD 中显示，不能把三维多段线称作实体。
 - 历史记录有数量/大小限制；重启后恢复本地记录不意味着旧服务进程或 thread 仍然运行。
 - 上游发布可能产生源码冲突，自动合并无法保证所有未来版本都无需人工适配。

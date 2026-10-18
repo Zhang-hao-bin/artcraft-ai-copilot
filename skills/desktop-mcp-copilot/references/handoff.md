@@ -1,6 +1,6 @@
 # 让使用者在自己电脑上调用
 
-交付整个 `desktop-mcp-copilot/` 目录，保留 references/scripts/agents。仅发 SKILL.md 会丢失依赖。先核对目标 agent 当前技能机制，支持项目技能时复制到其对应目录（见 [agent 适配](agent-adapters.md)）；已有技能先比较，不覆盖用户修改。只有明确要全局使用才安装全局技能。
+交付整个 `desktop-mcp-copilot/` 目录，保留 references/scripts/agents 及存在的 assets。仅发 SKILL.md 会丢失依赖。先核对目标 agent 当前技能机制，支持项目技能时复制到其对应目录（见 [agent 适配](agent-adapters.md)）；已有技能先比较，不覆盖用户修改。只有明确要全局使用才安装全局技能。
 
 无需先安装也能启动：让本机 agent 克隆/读取仓库并显式读取 `skills/desktop-mcp-copilot/SKILL.md`，再按路由读取相对参考。仓库根 `PROMPTS.md` 提供完整提示词，包括首次启动、已安装技能、仅连接、完整侧栏与换机复现。
 

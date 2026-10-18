@@ -1,6 +1,6 @@
 ---
 name: desktop-mcp-copilot
-description: 让具备本机文件与命令执行能力的 agent（如 Cursor、Claude Code、Codex）为桌面软件发现或实现 MCP、生成对应客户端连接包，并按需求开发 Copilot 侧栏。适用于用户要求连接自己的软件、自动封装或迁移集成；普通绘图无需此技能。
+description: 让具备本机文件与命令执行能力的 agent（如 Cursor、Claude Code、Codex、WorkBuddy）为桌面软件发现或实现 MCP、生成对应客户端连接包，并按需求开发 Copilot 侧栏。适用于用户要求连接自己的软件、自动封装或迁移集成；普通绘图无需此技能。
 ---
 
 # 桌面软件 MCP 与 Copilot 集成
@@ -21,6 +21,7 @@ description: 让具备本机文件与命令执行能力的 agent（如 Cursor、
 - **封装客户端可用的交付包**：在已验证的 MCP 之上，按当前客户端能力生成项目配置 + 操作 skill，或原生插件；不支持插件就用项目包。也读 [连接与插件](references/connect-and-package.md)。
 - **在软件内增加聊天侧栏**：软件需要源码、扩展面板或官方 UI 插件能力。读 [侧栏与多会话](references/copilot-and-conversations.md)。MCP 插件本身不会自动在目标软件里生成侧栏。
 - **迁移到另一款软件**：先读 [适配与验证](references/adapt-and-verify.md)，再读取对应层级参考。
+- **接入 WorkBuddy**：读 [WorkBuddy 流程](references/workbuddy.md)，通过其技能上传/显式读文件和自定义连接器流程实施，不猜测本机配置路径。
 - **连接本机 CADCraft**：读 [本机 CADCraft 实例](references/cadcraft-local.md)。路径和端口仅是这台电脑的实例，换环境必须重新发现。
 - **把技能交给另一个 agent**：读 [交接与安装](references/handoff.md)，提供整份技能目录或压缩包。
 
@@ -51,7 +52,7 @@ description: 让具备本机文件与命令执行能力的 agent（如 Cursor、
 
 把依赖检查、启动/连接方式、客户端配置增量、操作 skill、测试步骤、卸载/回退和能力边界放入独立输出目录。操作 skill 由真实工具目录生成，应包含目标文档核对、参数/单位、修改后回读与保存方式；本 skill 是制作集成的说明，不应冒充软件操作 skill。
 
-对支持 stdio 的 Cursor、Claude Code 或未知客户端，可用 [多客户端打包工具](scripts/package_agent.py) 生成新目录；Codex 原生插件继续用 [Codex 打包工具](scripts/package_plugin.py)。生成器不安装软件、不下载依赖、不修改客户端设置、不证明运行成功。HTTP/认证/原生 marketplace 按当前官方接口适配，不能盲目转换字段。
+对支持 stdio 的 Cursor、Claude Code、WorkBuddy 或未知客户端，可用 [多客户端打包工具](scripts/package_agent.py) 生成新目录；Codex 原生插件继续用 [Codex 打包工具](scripts/package_plugin.py)。生成器不安装软件、不下载依赖、不修改客户端设置、不证明运行成功。HTTP/认证/原生 marketplace 按当前官方接口适配，不能盲目转换字段。
 
 保留用户其他 server 和登录设置；只合并目标条目并留回退副本。不把当前电脑绝对路径、端口、Linux 命令或环境变量插值语法照搬给接收者。需要重开客户端时明确交接点，不能把待重开验收标成完成。
 

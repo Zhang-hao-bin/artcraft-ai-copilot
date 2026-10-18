@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / 'skills/desktop-mcp-copilot/scripts/package_agent.py'
@@ -43,6 +44,33 @@ class PackageAgentTests(unittest.TestCase):
                     self.assertEqual(result, json.loads((out / 'bundle.json').read_text()))
                     self.assertTrue((out / 'INSTALL.md').is_file())
             self.assertEqual(config.read_bytes(), original)
+
+    def test_workbuddy_cli_outputs_upload_materials_without_registering(self):
+        with tempfile.TemporaryDirectory() as directory:
+            d = Path(directory)
+            marker = d / 'launched'
+            config, skill = self.inputs(d, {'command': sys.executable,
+                'args': ['-c', f'from pathlib import Path; Path({str(marker)!r}).touch()']})
+            result = subprocess.run([sys.executable, str(SCRIPT), '--client', 'workbuddy',
+                '--name', 'test-app', '--mcp-config', str(config), '--skill-file', str(skill),
+                '--output', str(d / 'bundle')], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            data = json.loads(result.stdout)
+            self.assertEqual(data['installMode'], 'custom-connector-and-skill-upload')
+            self.assertFalse(data['installed'])
+            self.assertFalse(data['marketplacePackage'])
+            self.assertFalse(data['clientLoadVerified'])
+            self.assertFalse(marker.exists())
+            bundle = d / 'bundle'
+            with zipfile.ZipFile(bundle / data['operationSkillArchive']) as archive:
+                self.assertEqual(archive.namelist(), ['SKILL.md'])
+                self.assertEqual(archive.read('SKILL.md'), skill.read_bytes())
+                self.assertIsNone(archive.testzip())
+            self.assertEqual(json.loads((bundle / 'mcp.json').read_text())['mcpServers']
+                             ['test-app']['args'], json.loads(config.read_text())['mcpServers']
+                             ['test-app']['args'])
+            self.assertFalse((bundle / '.workbuddy').exists())
+            self.assertFalse((bundle / 'connector-meta.json').exists())
 
     def test_existing_directory_and_symlink_are_untouched(self):
         with tempfile.TemporaryDirectory() as directory:
